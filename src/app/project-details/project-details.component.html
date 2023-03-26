@@ -1,0 +1,47 @@
+<app-topbar></app-topbar>
+<app-sidebar></app-sidebar>
+
+<main id="main" class="main">
+  <div class="pagetitle">
+    <h1>Project Details</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a routerLink="/dashboard">Home</a></li>
+        <li class="breadcrumb-item"><a routerLink="/projects">Projects</a> </li>
+        <li class="breadcrumb-item active">Project Details</li>
+      </ol>
+    </nav>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="project-info-box mt-0">
+              <h5>Area of Implemenation</h5>
+              <p class="mb-0">{{selectedProject?.areaOfImplemenation}}</p>
+            </div><!-- / project-info-box -->
+
+            <div class="project-info-box">
+              <p><b>Project Title:</b> {{selectedProject?.name}}</p>
+              <p><b>Project ID:</b> {{selectedProject?.projectId}}</p>
+              <p><b>No of Client:</b> {{selectedProject?.noOfClients}}</p>
+              <p><b>Duration:</b> {{selectedProject?.duration}}</p>
+              <p><b>Location:</b> {{selectedProject?.location}}</p>
+              <p><b>No of Payments:</b> {{selectedProject?.noOfPayments}}</p>
+              <p><b>Budget:</b> {{selectedProject?.budget | currency}}</p>
+              <p class="mt-0"> <b>Google Drive Link:    </b><a href="{{selectedProject?.link}}" class="btn btn-outline-success">Checkout Project Related Documents</a></p>
+            </div><!-- / project-info-box -->
+          
+          </div><!-- / column -->
+
+          <!-- / colum<div class="col-md-7 m-4">
+            
+             <iframe class="mt-4 col-md-7" style="width:100%;height:80%;" src={{selectedProject?.link  }}></iframe> 
+            <p class="mb-0"><b>Google Drive Link :</b> <a href="{{selectedProject?.link}}" class="btn btn-outline-info">Checkout Project Related Documents</a></p>
+          </div> -->
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

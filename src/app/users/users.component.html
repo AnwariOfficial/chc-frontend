@@ -1,0 +1,475 @@
+<app-topbar></app-topbar>
+<app-sidebar></app-sidebar>
+<main id="main" class="main">
+    <div class="pagetitle">
+      <h1>Users</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a routerLink="/dashboard">Home</a></li>
+          <li class="breadcrumb-item active">All Users</li>
+        </ol>
+      </nav>
+    </div>
+<section class="section">
+    <div class="row">
+      <div class="col-12">
+
+        <div class="card">
+          <div class="card-body">
+            <!-- <h5 class="card-title"> All Users</h5> -->
+
+            <!-- Default Table
+            <table class="table" id="allUsers">
+              <thead>
+                <tr>
+                  <th scope="col">Photo</th>
+                  <th scope="col">User ID</th>
+                  <th scope="col">First Name</th>
+                  <th scope="col">Last Name</th>
+                  <th scope="col">Email</th>
+                  <th scope="col">Username</th>
+                  <th scope="col">Gender</th>
+                  <th scope="col">Role</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Action</th>
+                </tr>
+              </thead>
+              <tbody *ngFor="let appUser of users">
+                <tr >
+                  <td (click)="onSelectUser(appUser)"><img src={{appUser?.profileImageUrl}} style="width: 40px; height: 40px;" class="rounded-circle"></td>
+                  <td (click)="onSelectUser(appUser)">{{appUser?.userId}}</td>
+                  <td (click)="onSelectUser(appUser)">{{appUser?.firstName}}</td>
+                  <td (click)="onSelectUser(appUser)">{{appUser?.lastName}}</td>
+                  <td (click)="onSelectUser(appUser)">{{appUser?.email}}</td>
+                  <td (click)="onSelectUser(appUser)">{{appUser?.username}}</td>
+                  <td (click)="onSelectUser(appUser)">{{appUser?.gender}}</td>
+                  <td (click)="onSelectUser(appUser)">{{appUser?.role}}</td>
+                  <td (click)="onSelectUser(appUser)"><span [hidden]="!appUser?.active" class="badge badge-success">Active</span>
+                    <span [hidden]="appUser?.active" class="badge badge-danger">Inactive</span></td>
+                  <td (click)="onSelectUser(appUser)"><div class="btn-group">
+                    <button class="btn btn-outline-info" (click)="onEditUser(appUser)"><i class="fas fa-edit"></i></button>
+                    <button [hidden]="!isAdmin" class="btn btn-outline-danger" (click)="onDeleteUder(appUser?.username)"><i class="fas fa-trash"></i></button>
+                  </div></td>
+
+                </tr>
+                
+              </tbody>
+            </table> -->
+            <!-- End Default Table Example -->
+
+            <ng-container *ngIf="(usersState$ | async) as state" [ngSwitch]="state.appState">
+              <nav class="navbar navbar-expand-lg navbar-light bg-transparent">
+                <div class="container">
+                  <a class="navbar-brand"></a>
+                  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                  </button>
+                  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                      <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" ></a>
+                      </li>
+                    </ul>
+                   
+                    <form #searchForm="ngForm" (ngSubmit)="gotToPage(searchForm.value.name)" class="d-flex" role="search">
+                      <input type="search" name="name" ngModel class="form-control me-2" placeholder="Search user by Email" aria-label="Search">
+                      <button class="btn btn-success" type="submit">Search</button>
+                    </form>
+                    <button [hidden]="!isAdmin" type="button" class="btn btn-info" data-toggle="modal" data-target="#addUserModal">
+                      <i class="bi bi-plus-square"></i>New User
+                    </button>
+                  </div>
+                </div>
+              </nav>
+              <div>
+                <div class="row">
+                  <div class="col-12 text-center">
+                  <div *ngIf="loadingService | async" class="spinner-border" role="status" style="color: #0773d0;position: fixed;
+                            
+                            z-index:1000">
+                        <span class="sr-only"></span>
+                      </div>
+                    </div>
+                    </div>
+                <div class="col-12">
+                    <div class="col-md-12 mt-3">
+                      <ng-container *ngSwitchCase="'APP_ERROR'">{{ "Internal Error Please try again..."}}</ng-container>
+                      <ng-container *ngSwitchCase="'APP_LOADING'">
+                        <div class="d-flex justify-content-center mt-4">
+                          <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                          </div>
+                        </div>
+                      </ng-container>
+                      <ng-container *ngSwitchCase="'APP_LOADED'">
+                        <h3>User List</h3>
+                        <table class="table table-striped">
+                            <thead>
+                              <tr>
+                               
+                                  <th scope="col">Photo</th>
+                                  <th scope="col">User ID</th>
+                                  <th scope="col">First Name</th>
+                                  <th scope="col">Last Name</th>
+                                  <th scope="col">Email</th>
+                                  <th scope="col">Username</th>
+                                  <th scope="col">Gender</th>
+                                  <th scope="col">Role</th>
+                                  <th scope="col">Status</th>
+                                  <th scope="col">Action</th>
+                               
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr *ngFor="let user of state.appData.data.page.content; let i = index;">
+                                <td (click)="onSelectUser(user)"><img src={{user?.profileImageUrl}} style="width: 40px; height: 40px;" class="rounded-circle p-1 bg-primary"></td>
+                                <td (click)="onSelectUser(user)">{{user?.userId}}</td>
+                                <td (click)="onSelectUser(user)">{{user?.firstName}}</td>
+                                <td (click)="onSelectUser(user)">{{user?.lastName}}</td>
+                                <td (click)="onSelectUser(user)">{{user?.email}}</td>
+                                <td (click)="onSelectUser(user)">{{user?.username}}</td>
+                                <td (click)="onSelectUser(user)">{{user?.gender}}</td>
+                                <td (click)="onSelectUser(user)">{{user?.role.substring(5)}}</td>
+                                <td (click)="onSelectUser(user)"><span [hidden]="!user?.active" class="badge badge-success">Active</span>
+                                  <span [hidden]="user?.active" class="badge badge-danger">Inactive</span></td>
+                                <td><div class="btn-group">
+                                  <button class="btn btn-outline-info" (click)="onEditUser(user)"><i class="fas fa-edit"></i></button>
+                                  <!-- <button [hidden]="!isAdmin" class="btn btn-outline-danger" (click)="onDeleteUder(user?.username)"><i class="fas fa-trash"></i></button> -->
+                                  <button class="btn btn-outline-danger" (click)="onDeleteUder(user?.username)"><i class="fas fa-trash"></i></button>
+                                </div></td>
+                              </tr>
+                            </tbody>
+                          </table>
+                          <div *ngIf="state.appData.data.page.content.length < 1" class="alert alert-secondary" role="alert">
+                            No users found
+                          </div>
+                          <div class="row">
+                            <div class="col-2">
+                              <!-- <select class="form-select" aria-label="Default select example">
+                              <option selected>No of Records</option>
+                              <option value="1">10</option>
+                              <option value="2">25</option>
+                              <option value="3">50</option>
+                              <option value="3">100</option>
+                            </select> -->
+                     
+                            <div class="form-floating">
+                              <select class="form-select" id="floatingSelect" aria-label="Floating label select"  [(ngModel)]="SelectedNoOfRecords">
+                                <!-- <option value="10" (change)="ChangingValue(NoOfRecordForm.value.NoOfRegards)">10</option>
+                                <option value="25" (change)="ChangingValue(NoOfRecordForm.value.NoOfRegards)">25</option>
+                                <option value="50" (change)="ChangingValue(NoOfRecordForm.value.NoOfRegards)">50</option>
+                                <option value="100" (change)="ChangingValue(NoOfRecordForm.value.NoOfRegards)">100</option> -->
+
+                                <option *ngFor="let i of records" (click)="gotToPage(searchForm.value.name, 0, SelectedNoOfRecords)" >{{i}}</option>
+                                
+                              </select>
+                              <label for="floatingSelect">No of Records</label>
+                            </div>
+                          </div>
+                          
+                          <div class="col-10">
+                            <nav *ngIf="state.appData.data.page.content.length > 0" aria-label="Page navigation">
+                              <ul class="pagination justify-content-end">
+                                <li class="page-item pointer" [ngClass]="0 == (currentPage$ | async) ? ' disabled' : ''">
+                                  <a (click)="goToNextOrPreviousPage('backward', searchForm.value.name,SelectedNoOfRecords)" class="page-link" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo; Previous</span>
+                                  </a>
+                                </li>
+                                <li *ngFor="let pageNumber of [].constructor(state.appData.data.page.totalPages); let i = index;" 
+                                    class="page-item pointer" [ngClass]="i == (currentPage$ | async) ? ' active' : ''">
+                                  <a (click)="gotToPage(searchForm.value.name, i, SelectedNoOfRecords)" class="page-link">
+                                    {{ i + 1 }}
+                                  </a>
+                                </li>
+                                <li class="page-item pointer" [ngClass]="(state.appData.data.page.totalPages - 1) == (currentPage$ | async) ? ' disabled' : ''">
+                                  <a (click)="goToNextOrPreviousPage('forward', searchForm.value.name,SelectedNoOfRecords)" class="page-link" aria-label="Next">
+                                    <span aria-hidden="true">Next &raquo;</span>
+                                  </a>
+                                </li>
+                              </ul>
+                            </nav>
+                          </div>
+                          </div> 
+                      </ng-container>
+                    </div>
+                </div>
+              </div>
+              </ng-container>
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <button [hidden]="true" type="button" id="openUserInfo" data-bs-toggle="modal" data-bs-target="#openUserInfoModal" >
+    </button>
+    <button [hidden]="true" type="button" id="openUserEdit" data-bs-toggle="modal" data-bs-target="#openUserEditModal">
+     
+    </button>
+ 
+</section>
+ <!-- User Info Modal -->
+ <div class="modal fade" id="openUserInfoModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{selectedUser?.firstName}}
+          {{selectedUser?.lastName}}
+         </h5>
+      </div>
+      <div class="modal-body">
+        <div class="main-body">
+          <div class="row">
+            <div class="col-lg-5">
+              <div class="card">
+                <div class="card-body">
+                  <div class="d-flex flex-column align-items-center text-center">
+                    <img src={{selectedUser?.profileImageUrl}} alt="Admin" class="rounded-circle p-1 bg-primary" width="110">
+                    <div class="mt-3">
+                      <h4>{{selectedUser?.firstName}}
+                        {{selectedUser?.lastName}}</h4>
+                      <p class="text-secondary mb-1">Joining Date: {{selectedUser?.joinDate | date: 'mediumDate'}} </p>
+                      <p class="text-muted font-size-sm"><i class="bi bi-person-circle text-primary">@{{selectedUser?.username}}</i></p>
+                    </div>
+                  </div>
+                  <hr class="my-4">
+                  <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+                      <h6 class="mb-0"><i class="bi bi-back text-primary"></i> Last Login Date</h6>
+                      <span class="text-secondary">{{selectedUser?.lastLoginDateDisplay | date: 'medium'}}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+                      <h6 class="mb-0"><i class="bi bi-envelope-at-fill text-primary"></i> Email</h6>
+                      <span class="text-secondary">{{selectedUser?.email}} </span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+                      <h6 class="mb-0"> <i class="bi bi-person-slash text-primary"></i> Role</h6>
+                      <span class="text-secondary">{{selectedUser?.role.substring(5)}}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+                      <h6 class="mb-0" [hidden]="selectedUser?.notLocked"> <i class="bi bi-person-fill-lock text-primary"></i> Account Locked</h6>
+                      <h6 class="mb-0" [hidden]="!selectedUser?.notLocked"> <i class="bi bi-person-fill-lock text-primary"></i> Account Unlocked</h6>
+                        <span [hidden]="selectedUser?.notLocked">
+                          <i class="fa fa-lock float-right" style="color: red;">
+                          </i>
+                        
+                        </span>
+                        <span [hidden]="!selectedUser?.notLocked">
+                          <i class="fa fa-unlock float-right" style="color: green;">
+                          </i>
+                      
+                        </span>
+                     
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+                      <h6 class="mb-0"><i class="bi bi-person-vcard text-primary"></i> User ID</h6>
+                      <span class="text-secondary">{{selectedUser?.userId}}</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-7">
+              <div class="card">
+                <div class="card-body">
+                  <div class="row mb-3">
+                    <div class="col-sm-4">
+                      <h6 class="mb-0">First Name</h6>
+                    </div>
+                    <div class="col-sm-8 text-secondary">
+                      <input type="text" class="form-control" readonly value={{selectedUser?.firstName}}>
+                       
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <div class="col-sm-4">
+                      <h6 class="mb-0">Last Name</h6>
+                    </div>
+                    <div class="col-sm-8 text-secondary">
+                      <input type="text" class="form-control" readonly value={{selectedUser?.lastName}}>
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <div class="col-sm-4">
+                      <h6 class="mb-0">Email</h6>
+                    </div>
+                    <div class="col-sm-8 text-secondary">
+                      <input type="text" class="form-control" disabled value={{selectedUser?.email}}>
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <div class="col-sm-4">
+                      <h6 class="mb-0">Gender</h6>
+                    </div>
+                    <div class="col-sm-8 text-secondary">
+                      <input type="text" class="form-control" disabled value={{selectedUser?.gender}}>
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <div class="col-sm-4">
+                      <h6 class="mb-0">Authorities</h6>
+                    </div>
+                    <div class="col-sm-8 text-secondary">
+                      
+                      <input *ngFor="let authority of user?.authorities" readonly class="form-control" value={{authority}}>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="card">
+                    <div class="card-body">
+                      <h5 class="d-flex align-items-center mb-3">Project Status</h5>
+                      <p>Web Design</p>
+                      <div class="progress mb-3" style="height: 5px">
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                      </div>
+                      <p>Website Markup</p>
+                      <div class="progress mb-3" style="height: 5px">
+                        <div class="progress-bar bg-danger" role="progressbar" style="width: 72%" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100"></div>
+                      </div>
+                      <p>One Page</p>
+                      <div class="progress mb-3" style="height: 5px">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 89%" aria-valuenow="89" aria-valuemin="0" aria-valuemax="100"></div>
+                      </div>
+                      
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+ <!-- profile image change form -->
+<form enctype="multipart/form-data" style="display:none;">
+<input type="file"
+  (change)="onProfileImageChange($event); onUpdateProfileImage()"
+ name="profile-image-input" id="profile-image-input" placeholder="file" accept="image/*" />
+</form>
+
+
+
+ <!-- Edit Modal -->
+     <div class="modal fade" id="openUserEditModal" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title"> Edit {{editUser?.firstName}}
+              {{editUser?.lastName}}  <small [hidden]="isAdminOrManager">
+                (read only)
+              </small></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form #editUserForm="ngForm">
+              <div class="row mb-3">
+                <label for="inputEmail3" class="col-sm-2 col-form-label">Fist Name</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" name="firstName"  id="inputText" required [disabled]="!isAdminOrManager" 
+                  [(ngModel)]="editUser.firstName">
+                </div>
+              </div>
+              <div class="row mb-3">
+                <label for="inputEmail3" class="col-sm-2 col-form-label">Last Name</label>
+                <div class="col-sm-10">
+                  <input type="email" class="form-control" name="lastName"  id="inputEmail"  [(ngModel)]="editUser.lastName" [disabled]="!isAdminOrManager" required>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <label for="inputEmail3" class="col-sm-2 col-form-label">Email</label>
+                <div class="col-sm-10">
+                  <input type="text"  name="email" class="form-control" id="inputText" [disabled]="!isAdminOrManager" required [(ngModel)]="editUser.email">
+                </div>
+              </div>
+              <div class="row mb-3">
+                <label for="inputEmail3" class="col-sm-2 col-form-label">Username</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" name="username" id="inputText" [disabled]="!isAdminOrManager" required  [(ngModel)]="editUser.username">
+                </div>
+              </div>
+              <div class="row mb-3">
+                <label for="inputEmail3" class="col-sm-2 col-form-label">Role <small [hidden]="isAdmin">(read only)</small></label>
+                <div class="col-sm-10">
+                  <div class="form-group">
+                      <select name="role" [disabled]="!isAdmin" required [(ngModel)]="editUser.role" class="form-control">
+                        <option value="ROLE_USER">USER</option>
+                        <option value="ROLE_HR">HR</option>
+                        <option value="ROLE_MANAGER">MANAGER</option>
+                        <option value="ROLE_ADMIN">ADMIN</option>
+                        <option value="ROLE_SUPER_ADMIN">SUPER ADMIN</option>
+                      </select>
+                  </div>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <label for="inputEmail3" class="col-sm-2 col-form-label">Gender</label>
+                <div class="col-sm-10">
+                  <div class="form-group">
+                    <select name="gender" required [(ngModel)]="editUser.gender" [disabled]="!isAdminOrManager" class="form-control">
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                    </select>
+                </div>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <label for="inputEmail3" class="col-sm-2 col-form-label">Profile Picture</label>
+                <div class="col-sm-10">
+                  <div class="custom-file">
+                    <input type="file" accept="image/*" [disabled]="!isAdminOrManager" name="profileImage"
+                      (change)="onProfileImageChange($event)"
+                      class="custom-file-input">
+                    <label class="custom-file-label"><span [hidden]="!fileName">{{fileName}}</span>
+                      <span [hidden]="fileName">Choose File</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <label for="inputEmail3" class="col-sm-2 col-form-label">Status</label>
+                <div class="col-sm-10">
+                  <fieldset class="form-group">
+                    <div class="form-check">
+                      <label class="form-check-label">
+                        <input name="active" type="checkbox" [disabled]="!isManager" [(ngModel)]="editUser.active"
+                          class="form-check-input">
+                        Acitve <small [hidden]="isManager">(read only)</small>
+                      </label>
+                    </div>
+                    <div class="form-check disabled">
+                      <label class="form-check-label">
+                        <input name="locked" type="checkbox" [disabled]="!isManager" [(ngModel)]="editUser.notLocked"
+                          class="form-check-input">
+                        Unlocked <small [hidden]="isManager">(read only)</small>
+                      </label>
+                    </div>
+                  </fieldset>
+                </div>
+              </div>
+              </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" (click)="onUpdateUser()" [disabled]="editUserForm.invalid">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+     <!-- profile image change form -->
+  <form enctype="multipart/form-data" style="display:none;">
+    <input type="file"
+      (change)="onProfileImageChange($event); onUpdateProfileImage()"
+     name="profile-image-input" id="profile-image-input" placeholder="file" accept="image/*" />
+</form>
+
+    
+    <!-- Edit Modal-->
+</main>

@@ -1,0 +1,423 @@
+<app-topbar></app-topbar>
+<app-sidebar></app-sidebar>
+<main id="main" class="main">
+  <div class="pagetitle">
+    <h1>My Projects</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a routerLink="/dasboard">Home</a></li>
+        <li class="breadcrumb-item">Projects</li>
+
+      </ol>
+    </nav>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Projects</h5>
+
+      <!-- Bordered Tabs -->
+      <ul class="nav nav-tabs nav-tabs-bordered" id="borderedTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <!-- <button type="button" class="btn btn-primary"><i class="bi bi-star me-1"></i> With Text</button> -->
+          <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#bordered-home"
+            type="button" role="tab" aria-controls="home" aria-selected="true"><i class="bi bi-journals"></i> My
+            Projects</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#bordered-profile"
+            type="button" role="tab" aria-controls="profile" aria-selected="false"><i
+              class="bi bi-plus-square-fill"></i> Add Project</button>
+        </li>
+
+      </ul>
+      <!-- <div class="tab-content pt-2" id="borderedTabContent">
+        <div class="tab-pane fade show active" id="bordered-home" role="tabpanel" aria-labelledby="home-tab">
+          
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">List of Projects</h5>
+
+             
+              <table class="table table-hover" >
+                <thead>
+                  <tr>
+                    <th scope="col">Project ID</th>
+                    <th scope="col">Project Name</th>
+                    <th scope="col">Duration</th>
+                    <th scope="col">Budget</th>
+                    <th scope="col">Location</th>
+                    <th scope="col">No Of Clients</th>
+                    <th scope="col">No of Payments</th>
+                    <th scope="col">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>Brandon Jacob</td>
+                    <td>Designer</td>
+                    <td>28</td>
+                    <td><span class="badge bg-success">Approved</span></td>
+                    <td>2016-05-25</td>
+                    <td>2016-05-25</td>
+                    <td>
+                      <button type="button" class="btn btn-primary m-1" title="Edit"><i
+                          class="bi bi-pencil-square"></i></button>
+                      <button type="button" class="btn btn-danger m-1" title="Delete" data-bs-toggle="modal" data-bs-target="#largeModal"><i
+                          class="bi bi-trash-fill"></i></button>
+                      <button type="button" class="btn btn-success m-1" title="Explore"><i
+                          class="bi bi-book"></i></button>
+                    </td>
+                  </tr>
+                 
+                </tbody>
+              </table>
+             
+
+            </div>
+          </div>
+
+        </div> -->
+
+
+
+      <ng-container *ngIf="(projectsState$ | async) as state" [ngSwitch]="state.appState">
+        
+        <div>
+          <div class="row">
+            <div class="col-12 text-center">
+              <div *ngIf="loadingService | async" class="spinner-border" role="status" style="color: #0773d0;position: fixed;
+                        
+                        z-index:1000">
+                <span class="sr-only"></span>
+              </div>
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="col-md-12 mt-3">
+              <ng-container *ngSwitchCase="'APP_ERROR'"><div class="alert alert-danger text-center" role="alert">
+                <h4 class="alert-heading">Internal Error</h4>
+                <p>There was an Internal Error occured, Please try again or contract the Support team</p>
+                <hr>
+                <p class="mb-0">For Technical Assistance Contract :  Najibullah Anwari </p>
+              </div></ng-container>
+              <ng-container *ngSwitchCase="'APP_LOADING'">
+                <div class="d-flex justify-content-center mt-4">
+                  <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              </ng-container>
+              <ng-container *ngSwitchCase="'APP_LOADED'">
+                <div class="tab-content pt-2" id="borderedTabContent">
+                  <div class="tab-pane fade show active" id="bordered-home" role="tabpanel" aria-labelledby="home-tab">
+
+                    <div class="card">
+                      <div class="card-body">
+                        <nav class="navbar navbar-expand-lg navbar-light bg-transparent">
+                          <div class="container">
+                            <a class="navbar-brand"></a>
+                            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                              data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                              aria-label="Toggle navigation">
+                              <span class="navbar-toggler-icon"></span>
+                            </button>
+                            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                              <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                <li class="nav-item">
+                                  <a class="nav-link active" aria-current="page"></a>
+                                </li>
+                              </ul>
+                
+                              <form #searchForm="ngForm" (ngSubmit)="gotToPage(searchForm.value.name)" class="d-flex" role="search">
+                                <input type="search" name="name" ngModel class="form-control me-2" placeholder="Search by Project Name"
+                                  aria-label="Search">
+                                <button class="btn btn-success" type="submit">Search</button>
+                              </form>
+                            </div>
+                          </div>
+                        </nav>
+                        <h5 class="card-title">List of Projects</h5>
+
+
+                        <table class="table table-hover">
+                          <thead>
+                            <tr>
+                              <th scope="col">Project ID</th>
+                              <th scope="col">Project Name</th>
+                              <th scope="col">Duration</th>
+                              <th scope="col">Budget</th>
+                              <th scope="col">Location</th>
+                              <th scope="col">No Of Clients</th>
+                              <th scope="col">No of Payments</th>
+                              <th scope="col">Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr *ngFor="let project of state.appData.data.page.content; let i = index;">
+                              <td>{{project?.projectId}}</td>
+                              <td>{{project?.name}}</td>
+                              <td>{{project?.duration}}</td>
+                              <td>{{project?.budget}}</td>
+                              <td>{{project?.location}}</td>
+                              <td>{{project?.noOfClients}}</td>
+                              <td>{{project?.noOfPayments}}</td>
+                              <td>
+                                <div class="btn-group">
+                                  <button class="btn btn-outline-info" (click)="onEditProject(project)"><i class="fas fa-edit"></i></button>
+                                  <!-- <button [hidden]="!isAdmin" class="btn btn-outline-danger" (click)="onDeleteUder(user?.username)"><i class="fas fa-trash"></i></button> -->
+                                  <button class="btn btn-outline-danger" (click)="onDeleteProject(project)"><i class="fas fa-trash"></i></button>
+                                  <button class="btn btn-outline-success" (click)=" onSelectedProduct(project)" routerLink="/project-details"><i class="fa fa-eye" aria-hidden="true" ></i></button>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <div *ngIf="state.appData.data.page.content.length < 1" class="alert alert-secondary"
+                          role="alert">
+                          No users found
+                        </div>
+                        <div class="row">
+                          <div class="col-2">
+                            <!-- <select class="form-select" aria-label="Default select example">
+                          <option selected>No of Records</option>
+                          <option value="1">10</option>
+                          <option value="2">25</option>
+                          <option value="3">50</option>
+                          <option value="3">100</option>
+                        </select> -->
+
+                            <div class="form-floating">
+                              <select class="form-select" id="floatingSelect" aria-label="Floating label select"
+                                [(ngModel)]="SelectedNoOfRecords">
+                                <!-- <option value="10" (change)="ChangingValue(NoOfRecordForm.value.NoOfRegards)">10</option>
+                            <option value="25" (change)="ChangingValue(NoOfRecordForm.value.NoOfRegards)">25</option>
+                            <option value="50" (change)="ChangingValue(NoOfRecordForm.value.NoOfRegards)">50</option>
+                            <option value="100" (change)="ChangingValue(NoOfRecordForm.value.NoOfRegards)">100</option> -->
+
+                                <option *ngFor="let i of records"
+                                  (click)="gotToPage(searchForm.value.name, 0, SelectedNoOfRecords)">{{i}}</option>
+
+                              </select>
+                              <label for="floatingSelect">No of Records</label>
+                            </div>
+                          </div>
+
+                          <div class="col-10">
+                            <nav *ngIf="state.appData.data.page.content.length > 0" aria-label="Page navigation">
+                              <ul class="pagination justify-content-end">
+                                <li class="page-item pointer"
+                                  [ngClass]="0 == (currentPage$ | async) ? ' disabled' : ''">
+                                  <a (click)="goToNextOrPreviousPage('backward', searchForm.value.name,SelectedNoOfRecords)"
+                                    class="page-link" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo; Previous</span>
+                                  </a>
+                                </li>
+                                <li
+                                  *ngFor="let pageNumber of [].constructor(state.appData.data.page.totalPages); let i = index;"
+                                  class="page-item pointer" [ngClass]="i == (currentPage$ | async) ? ' active' : ''">
+                                  <a (click)="gotToPage(searchForm.value.name, i, SelectedNoOfRecords)"
+                                    class="page-link">
+                                    {{ i + 1 }}
+                                  </a>
+                                </li>
+                                <li class="page-item pointer"
+                                  [ngClass]="(state.appData.data.page.totalPages - 1) == (currentPage$ | async) ? ' disabled' : ''">
+                                  <a (click)="goToNextOrPreviousPage('forward', searchForm.value.name,SelectedNoOfRecords)"
+                                    class="page-link" aria-label="Next">
+                                    <span aria-hidden="true">Next &raquo;</span>
+                                  </a>
+                                </li>
+                              </ul>
+                            </nav>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+
+
+
+      <div class="tab-pane fade" id="bordered-profile" role="tabpanel" aria-labelledby="profile-tab">
+        <!-- Adding Journals -->
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Adding Project</h5>
+
+            <!-- Floating Labels Form -->
+            <form class="row g-3" novalidate #registerForm="ngForm" (ngSubmit)="onAddProject(registerForm)" >
+              <div class="col-md-12">
+                <div class="form-floating">
+                  <input type="text" class="form-control" id="floatingName" name="name" placeholder="Project Title" required ngModel #nameInput="ngModel">
+                  <label for="floatingName">Project Title</label>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-floating">
+                  <input type="email" class="form-control" id="floatingEmail" placeholder="Duration" name="duration" required ngModel #durationInput="ngModel">
+                  <label for="floatingEmail">Duration</label>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-floating">
+                  <input type="email" class="form-control" id="floatingEmail" placeholder="Budget" name="budget" required ngModel #budgetInput="ngModel">
+                  <label for="floatingEmail">Budget</label>
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="form-floating">
+                  <textarea class="form-control" placeholder="Area Of Implemenation" id="floatingTextarea"
+                    style="height: 100px;" required ngModel #areaOfImplemenationInput="ngModel"  name="areaOfImplemenation"></textarea>
+                  <label for="floatingTextarea">Area of Implemenation</label>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-floating">
+                  <input type="email" class="form-control" id="floatingEmail" placeholder="Location" name="location" required ngModel #locationInput="ngModel">
+                  <label for="floatingEmail">Location</label>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-floating">
+                  <input type="text" class="form-control" id="floatingEmail" placeholder="Project ID" name="projectId" required ngModel #projectIdInput="ngModel">
+                  <label for="floatingEmail">Project ID</label>
+                </div>
+              </div>
+              <div class="col-md-2">
+                <div class="form-floating">
+                  <input type="email" class="form-control" id="floatingEmail" placeholder="No of Clients" name="noOfClients" required ngModel #noOfClientInput="ngModel">
+                  <label for="floatingEmail">No of Clients</label>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-floating">
+                  <input type="text" class="form-control" id="floatingName" placeholder="Project Drive Link" name="link" required ngModel #linkInput="ngModel">
+                  <label for="floatingName">Project Drive Link</label>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-floating">
+                  <input type="text" class="form-control" id="floatingName" placeholder="No of Payments" name="noOfPayments" required ngModel #noOfPaymentnput="ngModel">
+                  <label for="floatingName">No of Payments</label>
+                </div>
+              </div>
+              <div class="text-center">
+                <button type="submit" class="btn btn-primary m-4">Save Project</button>
+                <button type="reset" class="btn btn-secondary m-4">Reset All</button>
+              </div>
+            </form><!-- End floating Labels Form -->
+
+          </div>
+        </div>
+
+      </div>
+
+    </div><!-- End Bordered Tabs -->
+
+  </div>
+
+</main>
+<!-- Large Modal -->
+<button [hidden]="true" type="button" id="openProjectEdit" data-bs-toggle="modal" data-bs-target="#projectEditModal" >
+</button>
+<button [hidden]="true" type="button" id="openProjectDelete" data-bs-toggle="modal" data-bs-target="#projectDeleteModal" >
+</button>
+<div class="modal fade" id="projectEditModal" tabindex="-1">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Project {{editProject.name}}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form class="row g-3" novalidate #editProjectForm="ngForm" >
+          <div class="col-md-12">
+            <div class="form-floating">
+              <input type="text" class="form-control" id="floatingName" name="name" placeholder="Project Title" required  [(ngModel)]="editProject.name">
+              <label for="floatingName">Project Title</label>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-floating">
+              <input type="email" class="form-control" id="floatingEmail" placeholder="Duration" name="duration" required   [(ngModel)]="editProject.duration">
+              <label for="floatingEmail">Duration</label>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-floating">
+              <input type="email" class="form-control" id="floatingEmail" placeholder="Budget" name="budget" required  [(ngModel)]="editProject.budget">
+              <label for="floatingEmail">Budget</label>
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="form-floating">
+              <textarea class="form-control" placeholder="Area Of Implemenation" id="floatingTextarea"
+                style="height: 100px;" required  [(ngModel)]="editProject.areaOfImplemenation"  name="areaOfImplemention"></textarea>
+              <label for="floatingTextarea">Area of Implemenation</label>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-floating">
+              <input type="email" class="form-control" id="floatingEmail" placeholder="Location" name="location" required [(ngModel)]="editProject.location">
+              <label for="floatingEmail">Location</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-floating">
+              <input type="text" class="form-control" id="floatingEmail" placeholder="Project ID" name="projectId" required [(ngModel)]="editProject.projectId">
+              <label for="floatingEmail">Project ID</label>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-floating">
+              <input type="email" class="form-control" id="floatingEmail" placeholder="No of Clients" name="noOfClients" required [(ngModel)]="editProject.noOfClients">
+              <label for="floatingEmail">No of Clients</label>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="form-floating">
+              <input type="text" class="form-control" id="floatingName" placeholder="Project Drive Link" name="link" required [(ngModel)]="editProject.link">
+              <label for="floatingName">Project Drive Link</label>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="form-floating">
+              <input type="text" class="form-control" id="floatingName" placeholder="No of Payments" name="noOfPayments" required [(ngModel)]="editProject.noOfPayments">
+              <label for="floatingName">No of Payments</label>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="closeEditProjectModalButton">Close</button>
+        <button type="button" class="btn btn-primary" (click)="updateProject()" [disabled]="editProjectForm.invalid">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div><!-- End Edit Project Modal-->
+
+<!-- Start of Delete Project  Modal-->
+<div class="modal fade" id="projectDeleteModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete Project Confirmation</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+       Are you sure you want to delete the Project {{deletedProject.name}} ?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="closeDeleteProjectModalButton">Close</button>
+        <button type="button" class="btn btn-primary" (click)="deleteProject()" >Sure</button>
+      </div>
+    </div>
+  </div>
+</div><!-- End Large Modal-->
